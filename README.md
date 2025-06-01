@@ -73,3 +73,19 @@ If you use this code in your research, please cite:
   year={2025}
 }
 ```
+
+# Quick assessment
+
+- demo_train script finally works with DoubleCheckEnv which simply adds a user message after the first assistant message; so basically a 2 turn environment
+- Commands to run
+
+# to run the vllm server
+NCCL_P2P_DISABLE=1 CUDA_VISIBLE_DEVICES=0,1 python verifiers/inference/vllm_serve.py --model 'Qwen/Qwen2.5-1.5B-Instruct' --tensor-parallel-size 2 --max_model_len 4096 --dtype bfloat16 --gpu_memory_utilization 0.95 --enable_prefix_caching True
+
+# to train
+NCCL_P2P_DISABLE=1 CUDA_VISIBLE_DEVICES=2,3 accelerate launch --num-processes 2 --config-file configs/zero3.yaml verifiers/examples/demo_train.py
+
+
+# in order to have your one environment
+- just clone DoubleCheckEnv and adapt generate() which should populate completion_ids, completion_messages and complettion_mask
+- define your own reward function(s) that operates on completion_messages
